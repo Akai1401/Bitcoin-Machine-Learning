@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
+CORS(app)
 
 # Load models
 lasso_model = joblib.load('models/lasso_model.pkl')
@@ -23,7 +25,7 @@ def predict_linear_regression(total_volume, market_cap):
     X = np.array([[total_volume, market_cap]])
     return linear_regression_model.predict(X)[0]
 
-@app.route('/predict_lasso', methods=['POST'])
+@app.route('/lasso', methods=['POST'])
 def predict_lasso_api():
     data = request.json
     total_volume = data['total_volume']
@@ -31,7 +33,7 @@ def predict_lasso_api():
     price = predict_lasso(total_volume, market_cap)
     return jsonify({'price': price})
 
-@app.route('/predict_neural_network', methods=['POST'])
+@app.route('/neural_network', methods=['POST'])
 def predict_neural_network_api():
     data = request.json
     total_volume = data['total_volume']
@@ -39,7 +41,7 @@ def predict_neural_network_api():
     price = predict_neural_network(total_volume, market_cap)
     return jsonify({'price': price})
 
-@app.route('/predict_linear_regression', methods=['POST'])
+@app.route('/linear_regression', methods=['POST'])
 def predict_linear_regression_api():
     data = request.json
     total_volume = data['total_volume']

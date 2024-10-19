@@ -25,6 +25,14 @@ def predict_linear_regression(total_volume, market_cap):
     X = np.array([[total_volume, market_cap]])
     return linear_regression_model.predict(X)[0]
 
+def predict_staking(total_volume, market_cap):
+    lasso_prediction = predict_lasso(total_volume, market_cap)
+    neural_network_prediction = predict_neural_network(total_volume, market_cap)
+    linear_regression_prediction = predict_linear_regression(total_volume, market_cap)
+    # Combine predictions (e.g., average)
+    staking_prediction = (lasso_prediction + neural_network_prediction + linear_regression_prediction) / 3
+    return staking_prediction    
+
 @app.route('/lasso', methods=['POST'])
 def predict_lasso_api():
     data = request.json
@@ -47,6 +55,14 @@ def predict_linear_regression_api():
     total_volume = data['total_volume']
     market_cap = data['market_cap']
     price = predict_linear_regression(total_volume, market_cap)
+    return jsonify({'price': price})
+
+@app.route('/staking', methods=['POST'])
+def predict_staking_api():
+    data = request.json
+    total_volume = data['total_volume']
+    market_cap = data['market_cap']
+    price = predict_staking(total_volume, market_cap)
     return jsonify({'price': price})
 
 if __name__ == '__main__':
